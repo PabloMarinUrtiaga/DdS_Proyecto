@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}CheFlix{% endblock %}</title>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <nav>
+    <a href="/" class="nav-logo">Che<span>Flix</span></a>
+    <ul class="nav-links">
+      <li><a href="{% url 'catalogo' %}" {% if request.resolver_match.url_name == 'catalogo' %}class="active"{% endif %}>Catálogo</a></li>
+      <li><a href="#">Novedades</a></li>
+      <li><a href="#">Mis películas</a></li>
+    </ul>
+    <div class="nav-actions">
+      {% if user.is_authenticated %}
+        <span class="btn-nav" style="cursor:default">{{ user.username }}</span>
+        <a href="{% url 'logout' %}"><button class="btn-nav">Salir</button></a>
+      {% else %}
+        <a href="{% url 'login' %}"><button class="btn-nav">Ingresar</button></a>
+        <a href="{% url 'registro' %}"><button class="btn-nav btn-nav-accent">Registrarse</button></a>
+      {% endif %}
+    </div>
+  </nav>
+
+  {% block content %}{% endblock %}
+
+  {% block extra_js %}{% endblock %}
+
+</body>
+</html>

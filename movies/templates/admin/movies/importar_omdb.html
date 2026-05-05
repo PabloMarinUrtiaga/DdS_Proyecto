@@ -1,0 +1,56 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<h1>Importar película desde OMDb</h1>
+
+<form method="post" style="margin: 20px 0; display:flex; gap:10px;">
+  {% csrf_token %}
+  <input type="text" name="query" value="{{ query }}"
+         placeholder="Ej: Inception, The Matrix..."
+         style="padding:8px 12px; font-size:14px; width:320px; border-radius:4px; border:1px solid #ccc;">
+  <button name="buscar" type="submit"
+          class="button default">Buscar</button>
+</form>
+
+{% if resultados %}
+<table style="width:100%; border-collapse:collapse;">
+  <thead>
+    <tr style="background:#f8f8f8;">
+      <th style="padding:10px; text-align:left;">Poster</th>
+      <th style="padding:10px; text-align:left;">Título</th>
+      <th style="padding:10px; text-align:left;">Año</th>
+      <th style="padding:10px; text-align:left;">IMDb ID</th>
+      <th style="padding:10px;"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for peli in resultados %}
+    <tr style="border-top:1px solid #eee;">
+      <td style="padding:10px;">
+        {% if peli.Poster != "N/A" %}
+          <img src="{{ peli.Poster }}" width="50" style="border-radius:4px;">
+        {% else %}
+          —
+        {% endif %}
+      </td>
+      <td style="padding:10px;">{{ peli.Title }}</td>
+      <td style="padding:10px;">{{ peli.Year }}</td>
+      <td style="padding:10px; color:#999; font-size:12px;">{{ peli.imdbID }}</td>
+      <td style="padding:10px;">
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="imdb_id" value="{{ peli.imdbID }}">
+          <button name="importar" type="submit" class="button">
+            + Agregar
+          </button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+<p style="margin-top:20px;">
+  <a href="../">← Volver al listado</a>
+</p>
+{% endblock %}

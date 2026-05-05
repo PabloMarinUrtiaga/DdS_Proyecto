@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}CheFlix — Ingresar{% endblock %}
+
+{% block extra_css %}
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'movies/css/catalogo.css' %}">
+  <style>
+    .auth-wrap {
+      min-height: calc(100vh - 70px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .auth-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .auth-title {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 400;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .auth-subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+
+    .auth-subtitle a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .form-group input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 14px;
+      padding: 11px 16px;
+      border-radius: 10px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus {
+      border-color: rgba(124,181,226,0.5);
+    }
+
+    .auth-btn {
+      width: 100%;
+      background: var(--accent);
+      border: none;
+      color: #0d0d0f;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s;
+    }
+
+    .auth-btn:hover { background: var(--accent-dark); }
+
+    .error-msg {
+      background: rgba(255, 90, 90, 0.1);
+      border: 1px solid rgba(255, 90, 90, 0.25);
+      color: #ff7070;
+      font-size: 13px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h1 class="auth-title">Bienvenido</h1>
+      <p class="auth-subtitle">
+        ¿No tenés cuenta? <a href="{% url 'registro' %}">Registrate acá</a>
+      </p>
+
+      {% if form.errors %}
+        <div class="error-msg">Usuario o contraseña incorrectos.</div>
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="id_username">Usuario</label>
+          <input type="text" name="username" id="id_username" autofocus>
+        </div>
+        <div class="form-group">
+          <label for="id_password">Contraseña</label>
+          <input type="password" name="password" id="id_password">
+        </div>
+        <input type="hidden" name="next" value="{{ next }}">
+        <button class="auth-btn" type="submit">Ingresar</button>
+      </form>
+    </div>
+  </div>
+{% endblock %}
