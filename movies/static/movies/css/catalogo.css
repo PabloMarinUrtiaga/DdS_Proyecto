@@ -234,10 +234,7 @@ nav {
 .tipo-tab[data-tipo="todos"] .dot          { background: var(--accent); }
 .tipo-tab[data-tipo="compra"].active       { border-color: #f0ede8; color: #f0ede8; }
 .tipo-tab[data-tipo="compra"] .dot         { background: #f0ede8; }
-.tipo-tab[data-tipo="alquiler"].active     { border-color: #c8f06e; color: #c8f06e; }
-.tipo-tab[data-tipo="alquiler"] .dot       { background: #c8f06e; }
-.tipo-tab[data-tipo="compra_alquiler"].active { border-color: #b594f7; color: #b594f7; }
-.tipo-tab[data-tipo="compra_alquiler"] .dot   { background: #b594f7; }
+
 
 /* ── SECCIONES ── */
 .catalog-wrap {
@@ -303,8 +300,7 @@ nav {
 
 /* dot colors */
 .dot-compra          { background: #f0ede8; }
-.dot-alquiler        { background: #c8f06e; }
-.dot-compra_alquiler { background: #b594f7; }
+
 
 /* ── GRID ── */
 .movie-grid {
@@ -377,8 +373,7 @@ nav {
 }
 
 .badge-compra          { background: rgba(240,237,232,0.15); color: #f0ede8; border: 1px solid rgba(240,237,232,0.25); }
-.badge-alquiler        { background: rgba(200,240,110,0.15); color: #c8f06e; border: 1px solid rgba(200,240,110,0.3); }
-.badge-compra_alquiler { background: rgba(181,148,247,0.15); color: #b594f7; border: 1px solid rgba(181,148,247,0.3); }
+
 
 .card-rating {
   position: absolute;

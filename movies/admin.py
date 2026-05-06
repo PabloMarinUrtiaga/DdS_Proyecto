@@ -4,13 +4,13 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 from django.urls import path
 from django.contrib import messages
-from .models import Movie
+from .models import Movie, Cart, CartItem
 
 
 @admin.register(Movie)
 class MovieAdmin(admin.ModelAdmin):
-    list_display = ['titulo', 'director', 'año', 'genero', 'imdb_rating', 'tipo']
-    list_filter  = ['tipo', 'genero']
+    list_display  = ['titulo', 'director', 'año', 'genero', 'imdb_rating', 'precio_compra']
+    list_filter   = ['genero']
     search_fields = ['titulo', 'director']
     change_list_template = 'admin/movies/movie_changelist.html'
 
@@ -58,13 +58,10 @@ class MovieAdmin(admin.ModelAdmin):
                         poster        = data.get('Poster', ''),
                         imdb_rating   = float(rating) if rating != 'N/A' else 0.0,
                         precio_compra = None,
-                        precio_alquiler = None,
-                        tipo          = 'compra_alquiler',
                     )
                     messages.success(request, f"✓ '{titulo}' agregada correctamente.")
             else:
                 messages.error(request, "No se pudo obtener el detalle de la película.")
-
             return redirect('../')
 
         context = {
@@ -74,5 +71,13 @@ class MovieAdmin(admin.ModelAdmin):
             'query':      query,
         }
         return render(request, 'admin/movies/importar_omdb.html', context)
-    
 
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ['user', 'created_at', 'total']
+
+
+@admin.register(CartItem)
+class CartItemAdmin(admin.ModelAdmin):
+    list_display = ['cart', 'movie', 'quantity', 'subtotal']

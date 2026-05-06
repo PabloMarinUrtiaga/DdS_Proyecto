@@ -1,25 +1,9 @@
-/*
-  catalogo.js — CheFlix
-  Espera que `movies` esté definido en el template antes de cargar este script:
-    <script>const movies = {{ movies_json|safe }};</script>
-    <script src="{% static 'movies/js/catalogo.js' %}"></script>
-*/
+/* catalogo.js — CheFlix */
 
-/* ── ESTADO ── */
 let activeFilter = 'all';
 let searchQuery  = '';
-let activeTipo   = 'todos';
-const sortModes  = { compra: 'default', alquiler: 'default', compra_alquiler: 'default' };
+let sortMode     = 'default';
 
-const TIPOS = ['compra', 'alquiler', 'compra_alquiler'];
-
-const BADGE_LABELS = {
-  compra:          'Solo Compra',
-  alquiler:        'Solo Alquiler',
-  compra_alquiler: 'Compra · Alquiler',
-};
-
-/* ── HELPERS ── */
 function placeholderHTML(titulo) {
   const initials = titulo.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
   return `<div class="poster-placeholder">
@@ -40,8 +24,8 @@ function posterHTML(m) {
   return placeholderHTML(m.titulo);
 }
 
-function filterMovies(tipo) {
-  let list = movies.filter(m => m.tipo === tipo);
+function getFiltered() {
+  let list = [...movies];
 
   if (searchQuery) {
     const q = searchQuery.toLowerCase();
@@ -56,95 +40,110 @@ function filterMovies(tipo) {
     list = list.filter(m => m.genero.toLowerCase().includes(activeFilter.toLowerCase()));
   }
 
-  const s = sortModes[tipo];
-  if (s === 'rating')    list.sort((a, b) => parseFloat(b.imdb_rating) - parseFloat(a.imdb_rating));
-  if (s === 'price_asc') list.sort((a, b) => {
-    const pa = parseInt(a.precio_alquiler || a.precio_compra) || 0;
-    const pb = parseInt(b.precio_alquiler || b.precio_compra) || 0;
-    return pa - pb;
-  });
-  if (s === 'year')      list.sort((a, b) => b.año - a.año);
+  if (sortMode === 'rating')    list.sort((a, b) => parseFloat(b.imdb_rating) - parseFloat(a.imdb_rating));
+  if (sortMode === 'price_asc') list.sort((a, b) => parseFloat(a.precio_compra || 0) - parseFloat(b.precio_compra || 0));
+  if (sortMode === 'year')      list.sort((a, b) => b.año - a.año);
 
   return list;
 }
 
-/* ── TEMPLATES ── */
+// ── CSRF helper ──
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+// ── Marcar botón como "en carrito" ──
+function marcarEnCarrito(movieId) {
+  const btn = document.querySelector(`[data-movie-id="${movieId}"]`);
+  if (!btn) return;
+  btn.textContent = '✓ En carrito';
+  btn.style.color = 'var(--muted)';
+  btn.style.cursor = 'default';
+  btn.disabled = true;
+}
+
+// ── Agregar al carrito sin redirigir ──
+async function agregarAlCarrito(movieId, btn) {
+  const resp = await fetch(`/carrito/agregar/${movieId}/`, {
+    method: 'POST',
+    headers: { 'X-CSRFToken': getCookie('csrftoken') },
+  });
+
+  if (resp.ok) {
+    carritoIds.push(movieId);
+    marcarEnCarrito(movieId);
+  } else if (resp.status === 400) {
+    marcarEnCarrito(movieId);
+  } else {
+    window.location.href = '/login/';
+  }
+}
+
+// ── Card HTML ──
 function cardHTML(m, i) {
   const genres = m.genero.split(',').slice(0, 2)
     .map(g => `<span class="genre-tag">${g.trim()}</span>`).join('');
 
-  const badge = `<span class="card-badge badge-${m.tipo}">${BADGE_LABELS[m.tipo]}</span>`;
+  const precio = m.precio_compra
+    ? `$${parseInt(m.precio_compra).toLocaleString('es-AR')}`
+    : 'Sin precio';
 
-  let overlayBtns = '';
-  if (m.tipo === 'compra' || m.tipo === 'compra_alquiler') {
-    overlayBtns += `<button class="overlay-btn buy"
-      onclick="event.stopPropagation(); alert('Comprar: ${m.titulo} — $${m.precio_compra}')">
-      Comprar · $${parseInt(m.precio_compra).toLocaleString('es-AR')}
-    </button>`;
-  }
-  if (m.tipo === 'alquiler' || m.tipo === 'compra_alquiler') {
-    overlayBtns += `<button class="overlay-btn rent"
-      onclick="event.stopPropagation(); alert('Alquilar: ${m.titulo} — $${m.precio_alquiler}')">
-      Alquilar · $${parseInt(m.precio_alquiler).toLocaleString('es-AR')}
-    </button>`;
-  }
-  overlayBtns += `<button class="overlay-btn detail"
-    onclick="window.location.href='/peliculas/${m.id}/'">Ver detalle</button>`;
+  const enCarrito = carritoIds.includes(m.id);
 
-  let pills = '';
-  if (m.precio_compra)   pills += `<div class="price-pill buy"><span class="label">Compra</span>$${parseInt(m.precio_compra).toLocaleString('es-AR')}</div>`;
-  if (m.precio_alquiler) pills += `<div class="price-pill rent"><span class="label">Alquilar</span>$${parseInt(m.precio_alquiler).toLocaleString('es-AR')}</div>`;
+  const btnCompra = !m.precio_compra
+    ? `<div class="price-pill buy" style="opacity:0.5">
+         <span class="label">Compra</span>Sin precio
+       </div>`
+    : enCarrito
+    ? `<button class="price-pill buy" data-movie-id="${m.id}" disabled
+         style="cursor:default; color:var(--muted)">
+         <span class="label">Compra</span>✓ En carrito
+       </button>`
+    : `<button class="price-pill buy" data-movie-id="${m.id}"
+         style="cursor:pointer; width:100%"
+         onclick="agregarAlCarrito(${m.id}, this)">
+         <span class="label">Compra</span>${precio}
+       </button>`;
 
   return `
   <div class="movie-card" style="animation-delay:${i * 40}ms">
     <div class="card-poster">
       ${posterHTML(m)}
-      ${badge}
       <div class="card-rating">★ ${m.imdb_rating}</div>
-      <div class="card-overlay">${overlayBtns}</div>
+      <div class="card-overlay">
+        <button class="overlay-btn detail"
+          onclick="window.location.href='/peliculas/${m.id}/'">
+          Ver detalles
+        </button>
+      </div>
     </div>
     <div class="card-info">
       <div class="card-genres">${genres}</div>
       <p class="card-title" title="${m.titulo}">${m.titulo}</p>
       <p class="card-meta">${m.director} · ${m.año}</p>
-      <div class="card-prices">${pills}</div>
+      <div class="card-prices">${btnCompra}</div>
     </div>
   </div>`;
 }
 
-/* ── RENDER ── */
 function render() {
-  TIPOS.forEach(tipo => {
-    const section = document.getElementById(`section-${tipo}`);
-    const grid    = document.getElementById(`grid-${tipo}`);
-    const counter = document.getElementById(`count-${tipo}`);
+  const list  = getFiltered();
+  const grid  = document.getElementById('grid-movies');
+  const count = document.getElementById('count-movies');
 
-    if (activeTipo !== 'todos' && activeTipo !== tipo) {
-      section.classList.add('hidden');
-      return;
-    }
+  count.textContent = list.length;
 
-    const list = filterMovies(tipo);
-    counter.textContent = `${list.length}`;
-
-    if (!list.length) {
-      section.classList.add('hidden');
-      grid.innerHTML = '';
-    } else {
-      section.classList.remove('hidden');
-      grid.innerHTML = list.map((m, i) => cardHTML(m, i)).join('');
-    }
-  });
-
-  const totalVisible = TIPOS.reduce((acc, t) => {
-    if (activeTipo !== 'todos' && activeTipo !== t) return acc;
-    return acc + filterMovies(t).length;
-  }, 0);
-
-  document.getElementById('globalEmpty').classList.toggle('visible', totalVisible === 0);
+  if (!list.length) {
+    grid.innerHTML = '';
+    document.getElementById('globalEmpty').classList.add('visible');
+  } else {
+    grid.innerHTML = list.map((m, i) => cardHTML(m, i)).join('');
+    document.getElementById('globalEmpty').classList.remove('visible');
+  }
 }
 
-/* ── EVENTOS ── */
 document.getElementById('searchInput').addEventListener('input', e => {
   searchQuery = e.target.value;
   render();
@@ -159,20 +158,9 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
   });
 });
 
-document.querySelectorAll('.tipo-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.tipo-tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    activeTipo = tab.dataset.tipo;
-    render();
-  });
-});
-
-document.querySelectorAll('.section-sort select').forEach(sel => {
-  sel.addEventListener('change', e => {
-    sortModes[e.target.dataset.section] = e.target.value;
-    render();
-  });
+document.getElementById('sortSelect').addEventListener('change', e => {
+  sortMode = e.target.value;
+  render();
 });
 
 render();

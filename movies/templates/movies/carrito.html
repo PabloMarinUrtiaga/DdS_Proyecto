@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}CheFlix — Mi carrito{% endblock %}
+
+{% block extra_css %}
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'movies/css/catalogo.css' %}">
+  <style>
+    .cart-wrap { max-width: 800px; margin: 60px auto; padding: 0 40px 80px; }
+    .cart-title { font-family: var(--font-display); font-size: 36px; font-weight: 400; margin-bottom: 32px; }
+    .cart-item { display: flex; align-items: center; gap: 20px; padding: 20px 0; border-bottom: 1px solid var(--border); }
+    .cart-item img { width: 60px; border-radius: 6px; }
+    .cart-item-info { flex: 1; }
+    .cart-item-title { font-family: var(--font-display); font-size: 18px; }
+    .cart-item-meta { font-size: 13px; color: var(--muted); margin-top: 4px; }
+    .cart-item-price { font-size: 16px; font-weight: 500; color: var(--accent); }
+    .cart-remove { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 6px 14px; border-radius: 8px; cursor: pointer; font-family: var(--font-body); font-size: 12px; transition: all 0.2s; }
+    .cart-remove:hover { border-color: #ff7070; color: #ff7070; }
+    .cart-total { text-align: right; margin-top: 32px; font-size: 20px; }
+    .cart-total span { font-family: var(--font-display); font-size: 32px; color: var(--accent); }
+    .btn-checkout { display: block; margin-top: 20px; margin-left: auto; background: var(--accent); color: #0d0d0f; border: none; padding: 14px 40px; border-radius: 100px; font-family: var(--font-body); font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+    .btn-checkout:hover { background: var(--accent-dark); }
+    .cart-empty { text-align: center; padding: 80px 0; color: var(--muted); }
+    .cart-empty a { color: var(--accent); text-decoration: none; }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="cart-wrap">
+  <h1 class="cart-title">Mi carrito</h1>
+
+  {% if cart.items.all %}
+    {% for item in cart.items.all %}
+    <div class="cart-item">
+      {% if item.movie.poster and item.movie.poster != 'N/A' %}
+        <img src="{{ item.movie.poster }}" alt="{{ item.movie.titulo }}">
+      {% endif %}
+      <div class="cart-item-info">
+        <p class="cart-item-title">{{ item.movie.titulo }}</p>
+        <p class="cart-item-meta">{{ item.movie.director }} · {{ item.movie.año }}</p>
+      </div>
+      <p class="cart-item-price">${{ item.movie.precio_compra }}</p>
+      <form method="post" action="{% url 'eliminar_del_carrito' item.id %}">
+        {% csrf_token %}
+        <button class="cart-remove" type="submit">Eliminar</button>
+      </form>
+    </div>
+    {% endfor %}
+
+    <div class="cart-total">
+      Total: <span>${{ cart.total }}</span>
+    </div>
+    <button class="btn-checkout">Finalizar compra</button>
+
+  {% else %}
+    <div class="cart-empty">
+      <p>Tu carrito está vacío.</p>
+      <p style="margin-top:12px;"><a href="{% url 'catalogo' %}">← Volver al catálogo</a></p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

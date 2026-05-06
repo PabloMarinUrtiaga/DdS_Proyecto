@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+html{% extends "base.html" %}
 {% load static %}
 
 {% block title %}CheFlix — Catálogo{% endblock %}
@@ -12,10 +12,9 @@
 
   <section class="hero">
     <p class="hero-label">Catálogo completo</p>
-    <h1>Comprá o alquilá <em>lo que quieras</em>, cuando quieras.</h1>
+    <h1>Comprá <em>lo que quieras</em>, cuando quieras.</h1>
   </section>
 
-  <!-- BÚSQUEDA + FILTROS DE GÉNERO -->
   <div class="controls">
     <div class="search-wrap">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
@@ -29,35 +28,15 @@
     {% endfor %}
   </div>
 
-  <!-- TABS POR TIPO -->
-  <div class="tipo-tabs">
-    <button class="tipo-tab active" data-tipo="todos">
-      <span class="dot" style="background:var(--accent)"></span> Todos
-    </button>
-    <button class="tipo-tab" data-tipo="compra">
-      <span class="dot dot-compra"></span> Solo Compra
-    </button>
-    <button class="tipo-tab" data-tipo="alquiler">
-      <span class="dot dot-alquiler"></span> Solo Alquiler
-    </button>
-    <button class="tipo-tab" data-tipo="compra_alquiler">
-      <span class="dot dot-compra_alquiler"></span> Compra &amp; Alquiler
-    </button>
-  </div>
-
-  <!-- CATÁLOGO POR SECCIONES -->
   <div class="catalog-wrap">
-
-    <!-- SECCIÓN: Solo Compra -->
-    <div class="section-block" id="section-compra">
+    <div class="section-block">
       <div class="section-header">
         <div class="section-title-wrap">
-          <span class="section-dot dot-compra"></span>
-          <span class="section-title">Solo Compra</span>
-          <span class="section-count" id="count-compra">0</span>
+          <span class="section-title">Películas</span>
+          <span class="section-count" id="count-movies">0</span>
         </div>
         <div class="section-sort">
-          <select data-section="compra">
+          <select id="sortSelect">
             <option value="default">Ordenar: relevancia</option>
             <option value="rating">Mayor rating</option>
             <option value="price_asc">Menor precio</option>
@@ -65,65 +44,21 @@
           </select>
         </div>
       </div>
-      <div class="movie-grid" id="grid-compra"></div>
+      <div class="movie-grid" id="grid-movies"></div>
     </div>
 
-    <!-- SECCIÓN: Solo Alquiler -->
-    <div class="section-block" id="section-alquiler">
-      <div class="section-header">
-        <div class="section-title-wrap">
-          <span class="section-dot dot-alquiler"></span>
-          <span class="section-title">Solo Alquiler</span>
-          <span class="section-count" id="count-alquiler">0</span>
-        </div>
-        <div class="section-sort">
-          <select data-section="alquiler">
-            <option value="default">Ordenar: relevancia</option>
-            <option value="rating">Mayor rating</option>
-            <option value="price_asc">Menor precio</option>
-            <option value="year">Más recientes</option>
-          </select>
-        </div>
-      </div>
-      <div class="movie-grid" id="grid-alquiler"></div>
-    </div>
-
-    <!-- SECCIÓN: Compra & Alquiler -->
-    <div class="section-block" id="section-compra_alquiler">
-      <div class="section-header">
-        <div class="section-title-wrap">
-          <span class="section-dot dot-compra_alquiler"></span>
-          <span class="section-title">Compra &amp; Alquiler</span>
-          <span class="section-count" id="count-compra_alquiler">0</span>
-        </div>
-        <div class="section-sort">
-          <select data-section="compra_alquiler">
-            <option value="default">Ordenar: relevancia</option>
-            <option value="rating">Mayor rating</option>
-            <option value="price_asc">Menor precio</option>
-            <option value="year">Más recientes</option>
-          </select>
-        </div>
-      </div>
-      <div class="movie-grid" id="grid-compra_alquiler"></div>
-    </div>
-
-    <!-- ESTADO VACÍO GLOBAL -->
     <div class="global-empty" id="globalEmpty">
       <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".3">
         <rect x="2" y="2" width="20" height="20" rx="3"/><path d="m2 15 5-5 4 4 3-3 5 5"/>
       </svg>
       <p>No encontramos películas con esa búsqueda.</p>
     </div>
-
   </div>
 
 {% endblock %}
 
 {% block extra_js %}
-  {# Los datos del modelo se pasan como JSON seguro desde la vista #}
-  <script>
-    const movies = {{ movies_json|safe }};
-  </script>
+  <script>const movies = {{ movies_json|safe }};</script>
+  <script>const carritoIds = {{ carrito_ids|safe }};</script>
   <script src="{% static 'movies/js/catalogo.js' %}"></script>
 {% endblock %}
