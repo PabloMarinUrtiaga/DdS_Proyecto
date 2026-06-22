@@ -12,8 +12,7 @@
     <a href="/" class="nav-logo">Che<span>Flix</span></a>
     <ul class="nav-links">
       <li><a href="{% url 'catalogo' %}" {% if request.resolver_match.url_name == 'catalogo' %}class="active"{% endif %}>Catálogo</a></li>
-      <li><a href="#">Novedades</a></li>
-      <li><a href="#">Mis películas</a></li>
+      <li><a href="{% url 'mis_peliculas' %}">Mis películas</a></li>
     </ul>
     <div class="nav-actions">
       {% if user.is_authenticated %}

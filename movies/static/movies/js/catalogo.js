@@ -114,8 +114,8 @@ function cardHTML(m, i) {
       <div class="card-rating">★ ${m.imdb_rating}</div>
       <div class="card-overlay">
         <button class="overlay-btn detail"
-          onclick="window.location.href='/peliculas/${m.id}/'">
-          Ver detalles
+          onclick="window.open('${m.trailer_url}', '_blank')">
+          Ver trailer
         </button>
       </div>
     </div>

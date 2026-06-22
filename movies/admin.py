@@ -4,7 +4,7 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 from django.urls import path
 from django.contrib import messages
-from .models import Movie, Cart, CartItem
+from .models import Movie, Cart, CartItem, Purchase
 
 
 @admin.register(Movie)
@@ -81,3 +81,5 @@ class CartAdmin(admin.ModelAdmin):
 @admin.register(CartItem)
 class CartItemAdmin(admin.ModelAdmin):
     list_display = ['cart', 'movie', 'quantity', 'subtotal']
+    
+admin.site.register(Purchase)

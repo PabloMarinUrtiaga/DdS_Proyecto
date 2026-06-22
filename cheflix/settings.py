@@ -120,3 +120,4 @@ LOGIN_REDIRECT_URL = '/'
 
 #ApiKey OMDb
 OMDB_API_KEY = 'fac330c4'
+

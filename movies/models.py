@@ -10,6 +10,7 @@ class Movie(models.Model):
     poster        = models.URLField(blank=True, default='N/A')
     imdb_rating   = models.DecimalField(max_digits=3, decimal_places=1)
     precio_compra = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    trailer_url   = models.URLField(blank=True, null=True)
 
     class Meta:
         ordering = ['titulo']
@@ -41,3 +42,11 @@ class CartItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity}x {self.movie.titulo}"
+    
+class Purchase(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
+    purchase_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.movie.titulo}"

@@ -51,7 +51,12 @@
     <div class="cart-total">
       Total: <span>${{ cart.total }}</span>
     </div>
-    <button class="btn-checkout">Finalizar compra</button>
+    <form action="{% url 'pago_exitoso' %}" method="post">
+        {% csrf_token %}
+        <button class="btn-checkout">
+            Finalizar compra
+        </button>
+    </form>
 
   {% else %}
     <div class="cart-empty">

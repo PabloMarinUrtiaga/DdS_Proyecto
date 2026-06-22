@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Mis películas</h1>
+
+{% for compra in compras %}
+    <p>{{ compra.movie.titulo }}</p>
+{% empty %}
+    <p>No tenés películas compradas.</p>
+{% endfor %}
+
+{% endblock %}
