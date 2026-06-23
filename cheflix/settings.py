@@ -25,6 +25,8 @@ SECRET_KEY = 'django-insecure-uv_bowxz8%39d&^z3%e8puizu(9z9g%909+e@ah=v0fhjk$@5%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+LOGIN_URL = '/login/'
+
 ALLOWED_HOSTS = []
 
 
@@ -121,3 +123,10 @@ LOGIN_REDIRECT_URL = '/'
 #ApiKey OMDb
 OMDB_API_KEY = 'fac330c4'
 
+EMAIL_BACKEND       = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST          = 'smtp.gmail.com'
+EMAIL_PORT          = 587
+EMAIL_USE_TLS       = True
+EMAIL_HOST_USER     = 'joaquincalvo111@gmail.com'      # tu Gmail
+EMAIL_HOST_PASSWORD = 'qrillbsztddctpnx'     # la clave de 16 caracteres
+DEFAULT_FROM_EMAIL  = 'joaquincalvo111@gmail.com'

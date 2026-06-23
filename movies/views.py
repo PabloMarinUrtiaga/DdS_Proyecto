@@ -1,7 +1,7 @@
 import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
-from django.contrib.auth.forms import UserCreationForm
+from .forms import RegistroForm
 from django.contrib.auth.decorators import login_required
 from .models import Movie, Cart, CartItem, Purchase
 
@@ -110,13 +110,13 @@ def ver_carrito(request):
 
 def registro(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = RegistroForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
             return redirect('catalogo')
     else:
-        form = UserCreationForm()
+        form = RegistroForm()
     return render(request, 'registration/registro.html', {'form': form})
 
 
