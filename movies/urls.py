@@ -11,7 +11,5 @@ urlpatterns = [
     path('logout/',   views.cerrar_sesion,             name='logout'),
     path('registro/', views.registro,                  name='registro'),
     path('mis-peliculas/',views.mis_peliculas,name='mis_peliculas'),
-    path('checkout/', views.checkout, name='checkout'),
     path('pago-exitoso/', views.pago_exitoso, name='pago_exitoso'),
-    path('pago-fallido/', views.pago_fallido, name='pago_fallido'),
 ]
